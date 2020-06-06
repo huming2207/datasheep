@@ -1,8 +1,6 @@
 use crate::common::constants;
-use crate::helpers::errors;
-use crate::helpers::errors::SyncifyError;
 use chrono::{DateTime, Duration, Timelike, Utc};
-use jsonwebtoken::errors::Error;
+use jsonwebtoken::errors::{Error, Result};
 use jsonwebtoken::{
     decode, encode, Algorithm, DecodingKey, EncodingKey, Header, TokenData, Validation,
 };
@@ -16,7 +14,7 @@ pub struct JwtClaims {
     pub uid: String,
 }
 
-pub fn generate_token(uid: &str) -> errors::Result<String> {
+pub fn generate_token(uid: &str) -> Result<String> {
     let now = Utc::now();
     let my_claims = JwtClaims {
         exp: now + Duration::hours(1),
@@ -30,17 +28,17 @@ pub fn generate_token(uid: &str) -> errors::Result<String> {
         &EncodingKey::from_secret(env::var(constants::JWT_SECRET).unwrap().as_bytes()),
     ) {
         Ok(str) => Ok(str),
-        Err(err) => Err(SyncifyError::InternalServer),
+        Err(err) => Err(err),
     }
 }
 
-pub fn validate_token(token: &str) -> errors::Result<JwtClaims> {
+pub fn validate_token(token: &str) -> Result<JwtClaims> {
     match decode::<JwtClaims>(
         &token,
         &DecodingKey::from_secret(env::var(constants::JWT_SECRET).unwrap().as_bytes()),
         &Validation::new(Algorithm::HS512),
     ) {
         Ok(result) => Ok(result.claims),
-        Err(err) => Err(SyncifyError::InternalServer),
+        Err(err) => Err(err),
     }
 }
