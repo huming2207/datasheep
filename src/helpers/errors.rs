@@ -4,30 +4,30 @@ use std::fmt::Debug;
 use std::{error, result};
 
 #[derive(Debug)]
-pub enum SyncifyError {
+pub enum DatasheepError {
     InternalServer,
     BadRequest,
     Unauthorised,
 }
 
-impl fmt::Display for SyncifyError {
+impl fmt::Display for DatasheepError {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match *self {
-            SyncifyError::InternalServer => write!(f, "Internal Server Error"),
-            SyncifyError::BadRequest => write!(f, "Bad Request"),
-            SyncifyError::Unauthorised => write!(f, "Unauthorised"),
+            DatasheepError::InternalServer => write!(f, "Internal Server Error"),
+            DatasheepError::BadRequest => write!(f, "Bad Request"),
+            DatasheepError::Unauthorised => write!(f, "Unauthorised"),
         }
     }
 }
 
-impl error::Error for SyncifyError {
+impl error::Error for DatasheepError {
     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
-            SyncifyError::InternalServer => None,
-            SyncifyError::BadRequest => None,
-            SyncifyError::Unauthorised => None,
+            DatasheepError::InternalServer => None,
+            DatasheepError::BadRequest => None,
+            DatasheepError::Unauthorised => None,
         }
     }
 }
 
-pub type Result<T> = result::Result<T, SyncifyError>;
+pub type Result<T> = result::Result<T, DatasheepError>;

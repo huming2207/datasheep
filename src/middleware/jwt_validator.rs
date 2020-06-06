@@ -1,4 +1,3 @@
-use crate::helpers::errors::SyncifyError;
 use crate::helpers::jwt;
 use crate::helpers::jwt::{validate_token, JwtClaims};
 use actix_web::dev::{Payload, PayloadStream, ServiceRequest};
