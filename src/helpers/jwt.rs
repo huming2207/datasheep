@@ -1,10 +1,13 @@
-use serde::{Serialize, Deserialize};
-use jsonwebtoken::{encode, decode, Header, Algorithm, Validation, EncodingKey, DecodingKey, TokenData};
-use chrono::{DateTime, Utc, Timelike, Duration};
+use crate::common::constants;
 use crate::helpers::errors;
-use jsonwebtoken::errors::Error;
 use crate::helpers::errors::SyncifyError;
-use std::borrow::Borrow;
+use chrono::{DateTime, Duration, Timelike, Utc};
+use jsonwebtoken::errors::Error;
+use jsonwebtoken::{
+    decode, encode, Algorithm, DecodingKey, EncodingKey, Header, TokenData, Validation,
+};
+use serde::{Deserialize, Serialize};
+use std::env;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct JwtClaims {
@@ -21,17 +24,23 @@ pub fn generate_token(uid: &str) -> errors::Result<String> {
         uid: uid.to_string(),
     };
 
-    match encode(&Header::new(Algorithm::HS512), &my_claims,
-                 &EncodingKey::from_secret("secret".as_ref())) { // TODO: dotenv-ify
-        Ok(str) => { Ok(str) },
-        Err(err) => { Err(SyncifyError::InternalServer) },
+    match encode(
+        &Header::new(Algorithm::HS512),
+        &my_claims,
+        &EncodingKey::from_secret(env::var(constants::JWT_SECRET).unwrap().as_bytes()),
+    ) {
+        Ok(str) => Ok(str),
+        Err(err) => Err(SyncifyError::InternalServer),
     }
 }
 
 pub fn validate_token(token: &str) -> errors::Result<JwtClaims> {
-    match decode::<JwtClaims>(&token, &DecodingKey::from_secret("secret".as_ref()),
-                              &Validation::new(Algorithm::HS512)) {
-        Ok(result) => { Ok(result.claims) },
-        Err(err) => { Err(SyncifyError::InternalServer) },
+    match decode::<JwtClaims>(
+        &token,
+        &DecodingKey::from_secret(env::var(constants::JWT_SECRET).unwrap().as_bytes()),
+        &Validation::new(Algorithm::HS512),
+    ) {
+        Ok(result) => Ok(result.claims),
+        Err(err) => Err(SyncifyError::InternalServer),
     }
 }
