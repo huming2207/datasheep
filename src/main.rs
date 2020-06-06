@@ -11,9 +11,9 @@ use std::{env, io};
 mod common;
 mod helpers;
 mod middleware;
-mod server;
 mod models;
 mod requests;
+mod server;
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
