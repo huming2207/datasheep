@@ -5,6 +5,7 @@ use actix_web::{ HttpServer, App };
 use actix_web::middleware::Logger;
 use std::{env, io};
 use crate::common::constants;
+use crate::middleware::jwt_validator;
 
 mod server;
 mod common;
@@ -23,6 +24,7 @@ async fn main() -> io::Result<()> {
 
     HttpServer::new(move || App::new()
         .wrap(Logger::default())
+        .wrap(jwt_validator::validator)
         .configure(server::load_services))
         .bind(env::var(constants::LISTEN_ADDR).unwrap().as_str())?
         .run()

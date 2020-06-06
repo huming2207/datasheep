@@ -9,8 +9,8 @@ use std::borrow::Borrow;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct JwtClaims {
     exp: DateTime<Utc>, // Required (validate_exp defaults to true in validation). Expiration time
-    iat: DateTime<Utc>,  // Optional. Issued at
-    uid: String,
+    iat: DateTime<Utc>,
+    pub uid: String,
 }
 
 pub fn generate_token(uid: &str) -> errors::Result<String> {
