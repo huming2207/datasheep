@@ -1,7 +1,7 @@
-use std::{error, result};
-use std::fmt;
 use serde::export::Formatter;
+use std::fmt;
 use std::fmt::Debug;
+use std::{error, result};
 
 #[derive(Debug)]
 pub enum SyncifyError {
@@ -31,4 +31,3 @@ impl error::Error for SyncifyError {
 }
 
 pub type Result<T> = result::Result<T, SyncifyError>;
-
