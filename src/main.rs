@@ -1,5 +1,6 @@
 #[macro_use]
 extern crate log;
+extern crate argon2;
 
 use crate::common::constants;
 use crate::middleware::jwt_validator;
@@ -11,6 +12,8 @@ mod common;
 mod helpers;
 mod middleware;
 mod server;
+mod models;
+mod requests;
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
