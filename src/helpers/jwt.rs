@@ -7,7 +7,7 @@ use crate::helpers::errors::SyncifyError;
 use std::borrow::Borrow;
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Claims {
+pub struct JwtClaims {
     exp: DateTime<Utc>, // Required (validate_exp defaults to true in validation). Expiration time
     iat: DateTime<Utc>,  // Optional. Issued at
     uid: String,
@@ -15,10 +15,10 @@ struct Claims {
 
 pub fn generate_token(uid: &str) -> errors::Result<String> {
     let now = Utc::now();
-    let my_claims = Claims {
+    let my_claims = JwtClaims {
         exp: now + Duration::hours(1),
         iat: now,
-        uid: uid.into_string(),
+        uid: uid.to_string(),
     };
 
     match encode(&Header::new(Algorithm::HS512), &my_claims,
@@ -28,9 +28,9 @@ pub fn generate_token(uid: &str) -> errors::Result<String> {
     }
 }
 
-pub fn validate_token(token: &str) -> errors::Result<Claims> {
-    match decode::<Claims>(&token, &DecodingKey::from_secret("secret".as_ref()),
-                     &Validation::new(Algorithm::HS512)) {
+pub fn validate_token(token: &str) -> errors::Result<JwtClaims> {
+    match decode::<JwtClaims>(&token, &DecodingKey::from_secret("secret".as_ref()),
+                              &Validation::new(Algorithm::HS512)) {
         Ok(result) => { Ok(result.claims) },
         Err(err) => { Err(SyncifyError::InternalServer) },
     }

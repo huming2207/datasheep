@@ -13,9 +13,9 @@ pub enum SyncifyError {
 impl fmt::Display for SyncifyError {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match *self {
-            SyncifyError::InternalServer => write!("Internal Server Error"),
-            SyncifyError::BadRequest => write!("Bad Request"),
-            SyncifyError::Unauthorised => write!("Unauthorised"),
+            SyncifyError::InternalServer => write!(f, "Internal Server Error"),
+            SyncifyError::BadRequest => write!(f, "Bad Request"),
+            SyncifyError::Unauthorised => write!(f, "Unauthorised"),
         }
     }
 }
