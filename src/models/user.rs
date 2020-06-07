@@ -2,6 +2,7 @@ use crate::common::constants;
 use argon2::{self, Config};
 use serde::{Deserialize, Serialize};
 use std::env;
+use crate::models::mongo_doc_model::MongoDocModel;
 
 #[derive(Serialize, Deserialize)]
 pub struct User {
@@ -10,7 +11,6 @@ pub struct User {
     pub username: String,
     pub email: String,
     pub password: String,
-    pub real_name: Option<String>,
 }
 
 impl User {
@@ -21,6 +21,12 @@ impl User {
     }
 
     pub fn compare_password(&self, raw: &str) -> bool {
-        return argon2::verify_encoded(self.password.as_str(), raw.as_bytes()).unwrap();
+        argon2::verify_encoded(self.password.as_str(), raw.as_bytes()).unwrap()
+    }
+}
+
+impl MongoDocModel for User {
+    fn collection_name() -> &'static str {
+        "user"
     }
 }
