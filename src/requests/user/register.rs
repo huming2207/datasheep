@@ -1,4 +1,3 @@
-use crate::helpers::jwt::generate_token_from_user;
 use crate::models::mongo_doc_model::MongoDocModel;
 use crate::models::resp_body::ResponseBody;
 use crate::models::user::User;
@@ -8,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidationErrors};
 
 #[derive(Deserialize, Serialize, Validate)]
-pub struct AuthUser {
+pub struct UserRegForm {
     #[serde(default)]
     #[validate(length(min = 1))]
     username: String,
@@ -21,7 +20,7 @@ pub struct AuthUser {
 }
 
 pub async fn register(
-    user_form: web::Form<AuthUser>,
+    user_form: web::Form<UserRegForm>,
     db: web::Data<mongodb::Database>,
 ) -> HttpResponse {
     let new_user = user_form.into_inner();
@@ -49,7 +48,7 @@ pub async fn register(
                     id: bson::oid::ObjectId::new(),
                     username: new_user.username.clone(),
                     email: new_user.email.clone(),
-                    password: "".to_string(),
+                    password: User::set_password(new_user.password.as_str())
                 };
 
                 let user_bson = bson::to_bson(&user).unwrap();
@@ -73,55 +72,6 @@ pub async fn register(
             error!("Failed to check user existence: {}", error);
             HttpResponse::InternalServerError()
                 .json(ResponseBody::new("Failed to check user existence", ""))
-        }
-    }
-}
-
-pub async fn login(
-    user_form: web::Form<AuthUser>,
-    db: web::Data<mongodb::Database>,
-) -> HttpResponse {
-    let login_user = user_form.into_inner();
-    let validate_ret = login_user.validate();
-    match validate_ret {
-        Ok(_) => (),
-        Err(error) => {
-            return HttpResponse::BadRequest()
-                .json(ResponseBody::new("Invalid content submitted", error));
-        }
-    }
-
-    let collection = db.collection(User::collection_name());
-    let find_ret = collection
-        .find_one(doc! {"username": login_user.username}, None)
-        .await;
-    match find_ret {
-        Ok(ret) => match ret {
-            Some(result_doc) => match bson::from_bson(bson::Bson::Document(result_doc)) {
-                Ok(result) => {
-                    let user: User = result;
-                    if user.compare_password(login_user.password.as_str()) {
-                        let token_result = generate_token_from_user(&user);
-                        match token_result {
-                            Ok(token_str) => {
-                                HttpResponse::Ok().json(ResponseBody::new("OK", token_str))
-                            }
-                            Err(err) => HttpResponse::Unauthorized()
-                                .json(ResponseBody::new("Unauthorised", err.to_string())),
-                        }
-                    } else {
-                        HttpResponse::NotFound().json(ResponseBody::new("User not found", ""))
-                    }
-                }
-                Err(error) => HttpResponse::InternalServerError().json(ResponseBody::new(
-                    "Invalid user returned from database",
-                    error.to_string(),
-                )),
-            },
-            None => HttpResponse::NotFound().json(ResponseBody::new("User not found", "")),
-        },
-        Err(_) => {
-            HttpResponse::InternalServerError().json(ResponseBody::new("Failed to find user", ""))
         }
     }
 }
