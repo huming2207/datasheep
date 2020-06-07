@@ -1,8 +1,8 @@
 use crate::common::constants;
+use crate::models::mongo_doc_model::MongoDocModel;
 use argon2::{self, Config};
 use serde::{Deserialize, Serialize};
 use std::env;
-use crate::models::mongo_doc_model::MongoDocModel;
 
 #[derive(Serialize, Deserialize)]
 pub struct User {
