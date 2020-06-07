@@ -1,5 +1,5 @@
 [package]
-name = "syncify-rs"
+name = "datasheep"
 version = "0.1.0"
 authors = ["hu"]
 edition = "2018"
@@ -11,10 +11,10 @@ r2d2 = "0.8.8"
 serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
-actix-service = "1.0.5"
 jsonwebtoken = "7"
 reqwest = "0.10.6"
-actix-rt = "1.1.1"
+actix = "0.9.0"
+actix-rt = "1.0.0"
 actix-web = "2.0.0"
 chrono = { version = "0.4.11", features = ["serde"] }
 derive_more = "0.99.7"
