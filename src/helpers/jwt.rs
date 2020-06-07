@@ -1,9 +1,8 @@
 use crate::common::constants;
-use chrono::{DateTime, Duration, Timelike, Utc};
-use jsonwebtoken::errors::{Error, Result};
-use jsonwebtoken::{
-    decode, encode, Algorithm, DecodingKey, EncodingKey, Header, TokenData, Validation,
-};
+use crate::models::user::User;
+use chrono::{DateTime, Duration, Utc};
+use jsonwebtoken::errors::Result;
+use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use std::env;
 
@@ -30,6 +29,10 @@ pub fn generate_token(uid: &str) -> Result<String> {
         Ok(str) => Ok(str),
         Err(err) => Err(err),
     }
+}
+
+pub fn generate_token_from_user(user: &User) -> Result<String> {
+    generate_token(user.id.to_string().as_str())
 }
 
 pub fn validate_token(token: &str) -> Result<JwtClaims> {
