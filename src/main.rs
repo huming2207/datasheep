@@ -39,7 +39,7 @@ async fn main() -> io::Result<()> {
     let db_client = match Client::with_uri_str(env::var(constants::DB_URL).unwrap().as_str()).await
     {
         Ok(client) => Ok(client),
-        Err(err) => Err(io::Error::new(
+        Err(_) => Err(io::Error::new(
             io::ErrorKind::NotConnected,
             "Failed when connecting to database",
         )),

@@ -1,4 +1,4 @@
-use crate::helpers::jwt::{generate_token_from_user};
+use crate::helpers::jwt::generate_token_from_user;
 use crate::models::mongo_doc_model::MongoDocModel;
 use crate::models::resp_body::ResponseBody;
 use crate::models::user::User;
@@ -56,9 +56,7 @@ pub async fn register(
                 if let bson::Bson::Document(document) = user_bson {
                     let ret = collection.insert_one(document, None).await;
                     match ret {
-                        Ok(_) => {
-                            HttpResponse::Ok().json(ResponseBody::new("User created", ""))
-                        }
+                        Ok(_) => HttpResponse::Ok().json(ResponseBody::new("User created", "")),
                         Err(error) => {
                             error!("Failed when saving user to database: {}", error);
                             HttpResponse::InternalServerError()
